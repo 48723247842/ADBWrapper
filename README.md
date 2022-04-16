@@ -1,6 +1,11 @@
 # ADB Wrapper
 
 ```
+python3 -m pip install ADBWrapper
+```
+
+```
+from ADBWrapper import ADBWrapper
 if __name__ == "__main__":
 	adb = ADBWrapper( { "ip": "192.168.4.57" , "port": "5555" } )
 	adb.take_screen_shot()

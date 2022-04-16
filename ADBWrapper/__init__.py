@@ -7,7 +7,7 @@ from pathlib import Path
 import tempfile
 import imagehash
 
-import keycode_enum
+from . import keycode_enum
 
 # https://github.com/0187773933/ADBWrapper/blob/master/v1/wrapper/wrapper.go
 class ADBWrapper:
@@ -101,24 +101,3 @@ class ADBWrapper:
 		except Exception as e:
 			print( e )
 			return False
-
-
-
-if __name__ == "__main__":
-	adb = ADBWrapper( { "ip": "192.168.4.57" , "port": "5555" } )
-	# adb.take_screen_shot()
-	# adb.screen_shot.show()
-	# adb.open_uri( "https://www.youtube.com/watch?v=naOsvWxeYgo&list=PLcW8xNfZoh7fCLYJi0m3JXLs0LdcAsc0R&index=1" )
-	# adb.press_key_sequence( [ 22 , 22 , 22 , 22 ] )
-	# time.sleep( 10 )
-
-	# adb.press_keycode( "KEYCODE_MEDIA_PAUSE" )
-	# adb.press_keycode( "KEYCODE_MEDIA_FAST_FORWARD" )
-	# adb.press_keycode( "KEYCODE_MEDIA_PLAY" )
-
-	screen_difference = adb.screen_difference_to_image( "/Users/morpheous/WORKSPACE/GO/FireStickC2Server/ScreenStates/firestick_whos_watching.png" )
-	print( screen_difference )
-
-	screen_difference = adb.screen_difference_to_image( "/Users/morpheous/WORKSPACE/GO/FireStickC2Server/ScreenStates/disney_profile_selection.png" )
-	print( screen_difference )
-

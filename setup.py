@@ -13,7 +13,7 @@ with pathlib.Path( "./ADBWrapper/requirements.txt" ).open() as requirements_txt:
 
 setuptools.setup(
 	name="ADBWrapper",
-	version="0.0.1",
+	version="0.0.2",
 	author="7435171",
 	author_email="48723247842@protonmail.com",
 	description="ADB Wrapper",
@@ -24,6 +24,8 @@ setuptools.setup(
 		"License :: OSI Approved :: MIT License",
 		"Operating System :: OS Independent",
 	],
+	include_package_data = True ,
+	include=[ "keycode_enum.py" ] ,
 	python_requires='>=3.6',
 	install_requires=install_requires
 )
