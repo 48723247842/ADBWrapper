@@ -12,7 +12,6 @@ if __name__ == "__main__":
 	adb.screen_shot.show()
 	adb.open_uri( "https://www.youtube.com/watch?v=naOsvWxeYgo&list=PLcW8xNfZoh7fCLYJi0m3JXLs0LdcAsc0R&index=1" )
 	adb.press_key_sequence( [ 22 , 22 , 22 , 22 ] )
-	time.sleep( 10 )
 
 	adb.press_keycode( "KEYCODE_MEDIA_PAUSE" )
 	adb.press_keycode( "KEYCODE_MEDIA_FAST_FORWARD" )
