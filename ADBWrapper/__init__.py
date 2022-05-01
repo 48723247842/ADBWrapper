@@ -120,8 +120,19 @@ class ADBWrapper:
 					parsed_session[ "app_name" ] = media_session_line.split( "package=" )[ 1 ]
 				elif "active=" in media_session_line:
 					parsed_session[ "active" ] = media_session_line.split( "active=" )[ 1 ]
-				elif "state=" in media_session_line:
-					parsed_session[ "state" ] = media_session_line.split( "state=" )[ 1 ]
+				elif "PlaybackState {" in media_session_line:
+					state = media_session_line.split( "PlaybackState {" )[ 1 ].split( "}" )[ 0 ].split( "," )
+					parsed_session[ "state" ] = {
+						"state": state[ 0 ].split( "=" )[ 1 ] ,
+						"position": state[ 1 ].split( "=" )[ 1 ] ,
+						"buffered_position": state[ 2 ].split( "=" )[ 1 ] ,
+						"speed": state[ 3 ].split( "=" )[ 1 ] ,
+						"updated": state[ 4 ].split( "=" )[ 1 ] ,
+						"actions": state[ 5 ].split( "=" )[ 1 ] ,
+						"custom_actions": state[ 6 ].split( "=" )[ 1 ] ,
+						"active_item_id": state[ 7 ].split( "=" )[ 1 ] ,
+						"error": state[ 8 ].split( "=" )[ 1 ] ,
+					}
 				elif "volumeType=" in media_session_line:
 					volume_type = media_session_line.split( "volumeType=" )[ 1 ].split( "," )
 					parsed_session[ "volume" ] = {
@@ -132,9 +143,12 @@ class ADBWrapper:
 					}
 				elif "metadata:" in media_session_line:
 					meta_data = media_session_line.split( "metadata:" )[ 1 ]
+					description = meta_data.split( "description=" )[ 1 ]
+					if description.endswith( ", null" ):
+						description = description.split( ", null" )[ 0 ]
 					parsed_session[ "meta_data" ] = {
 						"size": meta_data.split( "size=" )[ 1 ].split( ", description=" )[ 0 ] ,
-						"description": meta_data.split( "description=" )[ 1 ]
+						"description": description
 					}
 			parsed_sessions.append( parsed_session )
 		self.now_playing = {
