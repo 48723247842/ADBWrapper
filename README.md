@@ -6,6 +6,7 @@ python3 -m pip install ADBWrapper
 
 ```
 from ADBWrapper import ADBWrapper
+from pprint import pprint
 if __name__ == "__main__":
 	adb = ADBWrapper( { "ip": "192.168.4.57" , "port": "5555" } )
 	adb.take_screen_shot()
@@ -16,4 +17,7 @@ if __name__ == "__main__":
 	adb.press_keycode( "KEYCODE_MEDIA_PAUSE" )
 	adb.press_keycode( "KEYCODE_MEDIA_FAST_FORWARD" )
 	adb.press_keycode( "KEYCODE_MEDIA_PLAY" )
+
+	status = adb.get_status()
+	pprint( status )
 ```

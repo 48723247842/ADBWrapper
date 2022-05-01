@@ -72,6 +72,80 @@ class ADBWrapper:
 		result = self.exec( f"adb shell am start -a android.intent.action.VIEW -d {uri}" )
 		print( result )
 
+	def get_status( self ):
+
+		# 1.) Parse Window Stack
+		window_stack = self.exec( f"adb shell dumpsys window windows" )
+		windows = window_stack.split( "Window #" )
+		windows = windows[ 1 : ] # remove WINDOW MANAGER Preamble
+		parsed_windows = []
+		for window_index , window in enumerate( windows ):
+			window_data_lines = window.split( "\n" )
+			parsed_window = { "window_index": window_index }
+			parsed_window[ "title" ] = window_data_lines[ 0 ].split( " " )[ -1 ].split( "}" )[ 0 ]
+			for window_data_line_index , window_data_line in enumerate( window_data_lines ):
+				# print( f"Window # {window_index} === Line # {window_data_line_index} === {window_data_line}" )
+				if "mFrame=" in window_data_line:
+					parsed_window[ "frame_geometry" ] = window_data_line.split( "mFrame=" )[ 1 ].split( " " )[ 0 ]
+				elif "isOnScreen=" in window_data_line:
+					parsed_window[ "is_on_screen" ] = window_data_line.split( "isOnScreen=" )[ 1 ]
+				elif "isVisible=" in window_data_line:
+					parsed_window[ "is_visible" ] = window_data_line.split( "isVisible=" )[ 1 ]
+			parsed_windows.append( parsed_window )
+		parsed_windows = sorted( parsed_windows , key=lambda x: x[ "is_visible" ] , reverse=True )
+		self.window_stack = parsed_windows
+
+		# 2.) Parse Media Session
+		media_session = self.exec( f"adb shell dumpsys media_session" )
+		media_session = media_session.split( "Sessions Stack" )[ 1 ]
+
+		parsed_sessions = []
+
+		media_sessions = media_session.split( "\n\n" )
+		now_playing = media_sessions[ -1 ]
+		if "packages=" in now_playing:
+			now_playing = now_playing.split( "packages=" )[ 1 ]
+		media_sessions = media_sessions[ 0 : -1 ]
+		for media_session_index , media_session in enumerate( media_sessions ):
+			# print( f"{index} === {media_session}" )
+			media_session_lines = media_session.split( "\n" )
+			parsed_session = {}
+			if media_session_index == 0:
+				media_session_lines = media_session_lines[ 1 : ]
+			parsed_session[ "title_info" ] = media_session_lines[ 0 ].split( " " )[ 0 : -1 ]
+			parsed_session[ "title_info" ] = [ x for x in parsed_session[ "title_info" ] if x ]
+			for media_session_line_index , media_session_line in enumerate( media_session_lines ):
+				# print( f"Media Session === {media_session_index} === {media_session_line_index} === {media_session_line.strip()}" )
+				if "package=" in media_session_line:
+					parsed_session[ "app_name" ] = media_session_line.split( "package=" )[ 1 ]
+				elif "active=" in media_session_line:
+					parsed_session[ "active" ] = media_session_line.split( "active=" )[ 1 ]
+				elif "state=" in media_session_line:
+					parsed_session[ "state" ] = media_session_line.split( "state=" )[ 1 ]
+				elif "volumeType=" in media_session_line:
+					volume_type = media_session_line.split( "volumeType=" )[ 1 ].split( "," )
+					parsed_session[ "volume" ] = {
+						"type": volume_type[ 0 ] ,
+						"control_type": volume_type[ 1 ].split( "=" )[ 1 ] ,
+						"max": volume_type[ 2 ].split( "=" )[ 1 ] ,
+						"current": volume_type[ 3 ].split( "=" )[ 1 ] ,
+					}
+				elif "metadata:" in media_session_line:
+					meta_data = media_session_line.split( "metadata:" )[ 1 ]
+					parsed_session[ "meta_data" ] = {
+						"size": meta_data.split( "size=" )[ 1 ].split( ", description=" )[ 0 ] ,
+						"description": meta_data.split( "description=" )[ 1 ]
+					}
+			parsed_sessions.append( parsed_session )
+		self.now_playing = {
+			"now_playing_app": now_playing ,
+			"sessions": parsed_sessions ,
+		}
+		return {
+			"now_playing": self.now_playing ,
+			"window_stack": self.window_stack
+		}
+
 	def take_screen_shot( self ):
 		try:
 			with tempfile.TemporaryDirectory() as temp_dir:
