@@ -13,7 +13,7 @@ with pathlib.Path( "./ADBWrapper/requirements.txt" ).open() as requirements_txt:
 
 setuptools.setup(
 	name="ADBWrapper",
-	version="0.0.4",
+	version="0.0.6",
 	author="7435171",
 	author_email="48723247842@protonmail.com",
 	description="ADB Wrapper",
@@ -26,6 +26,7 @@ setuptools.setup(
 	],
 	include_package_data = True ,
 	include=[ "keycode_enum.py" ] ,
+	excluded=[ "pypiUpload.sh" ] ,
 	python_requires='>=3.6',
 	install_requires=install_requires
 )

@@ -104,7 +104,7 @@ class ADBWrapper:
 		media_sessions = media_session.split( "\n\n" )
 		now_playing = media_sessions[ -1 ]
 		if "packages=" in now_playing:
-			now_playing = now_playing.split( "packages=" )[ 1 ]
+			now_playing = now_playing.split( "packages=" )[ 1 ].strip()
 		media_sessions = media_sessions[ 0 : -1 ]
 		for media_session_index , media_session in enumerate( media_sessions ):
 			# print( f"{index} === {media_session}" )
